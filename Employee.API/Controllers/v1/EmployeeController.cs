@@ -5,7 +5,7 @@ namespace Employee.API.Controllers.v1;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("/")]
+[Route("v{version:apiVersion}/teste")]
 public class EmployeeController : ControllerBase
 {
     [HttpGet]

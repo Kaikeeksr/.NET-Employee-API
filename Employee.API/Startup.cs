@@ -1,6 +1,5 @@
 ﻿using System.IO.Compression;
 using Employee.API.Configurations;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.ResponseCompression;
 
 namespace Employee.API;
@@ -44,8 +43,13 @@ public class Startup
         {
             app.UseCors("CorsPolicy");
             app.UseResponseCompression();
-            app.UseSwaggerUI();
+            app.UseRouting();
             app.UseSwagger();
-            
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Employee API V1");
+                c.RoutePrefix = string.Empty;
+            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
 }
