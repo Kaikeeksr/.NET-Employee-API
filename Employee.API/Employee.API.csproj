@@ -13,4 +13,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Employee.Domain\Employee.Domain.csproj"/>
+    <ProjectReference Include="..\Employee.Infrastructure\Employee.Infrastructure.csproj"/>
+  </ItemGroup>
+
 </Project>

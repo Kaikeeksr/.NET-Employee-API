@@ -1,6 +1,8 @@
 ﻿using System.IO.Compression;
 using Employee.API.Configurations;
+using Employee.Infrastructure.EF;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 
 namespace Employee.API;
 
@@ -17,7 +19,10 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        //add o banco de dados
+        services.AddDbContext<CleverCloudDbContext>(options =>
+        {
+            options.UseMySQL(Configuration.GetConnectionString("ConnectionStrings:CleverCloud"));
+        });
 
         services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Optimal; });
 

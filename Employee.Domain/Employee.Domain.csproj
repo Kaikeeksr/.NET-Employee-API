@@ -11,5 +11,10 @@
       <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
       <PackageReference Include="Notification.Nuget" Version="2.1.1" />
     </ItemGroup>
-
+    
+    <ItemGroup>
+      <Folder Include="Models\Entities\" />
+      <Folder Include="Models\Requests\" />
+    </ItemGroup>
+    
 </Project>
