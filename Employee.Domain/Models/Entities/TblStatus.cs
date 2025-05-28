@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Employee.Infrastructure;
+﻿namespace Employee.Domain;
 
 public partial class TblStatus
 {
