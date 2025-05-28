@@ -1,6 +1,6 @@
 ﻿namespace Employee.Domain.Interfaces.Repositories;
 
-public class IEmployeesRepository
+public interface IEmployeesRepository
 {
-    
+    Task<List<TblEmployees>> GetAllAsync();
 }

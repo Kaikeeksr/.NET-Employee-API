@@ -21,7 +21,7 @@ public class Startup
     {
         services.AddDbContext<CleverCloudDbContext>(options =>
         {
-            options.UseMySQL(Configuration.GetConnectionString("ConnectionStrings:CleverCloud"));
+            options.UseMySQL(Configuration.GetConnectionString("CleverCloud"));
         });
 
         services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Optimal; });
@@ -37,7 +37,8 @@ public class Startup
             options.AddPolicy("CorsPolicy",
                 builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); });
         });
-        
+
+        services.AddDependencyInjectionConfiguration();
         services.AddControllers();
         services.AddWebApiConfiguration(Configuration);
         services.AddSwaggerConfiguration();
