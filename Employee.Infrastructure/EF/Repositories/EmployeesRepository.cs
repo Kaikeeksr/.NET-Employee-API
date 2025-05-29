@@ -14,7 +14,7 @@ public class EmployeesRepository : IEmployeesRepository
     public EmployeesRepository(CleverCloudDbContext context, IMapper mapper)
     {
         _context = context;
-        _mapper = _mapper;
+        _mapper = mapper;
     }
 
     public async Task<List<TblEmployees>> GetAllAsync()
@@ -27,18 +27,21 @@ public class EmployeesRepository : IEmployeesRepository
         return employeesList;
     }
 
-    public async Task<EmployeeResponse.DisableEmployeeResponse> DisableEmployeeAsync(int id)
+    public async Task<EmployeeResponse.DisableEmployeeResponse> SetEmployeeInactiveAsync(int id)
     {
-        var employee = await _context.TblEmployees
-            .Include(e => e.EStatusNavigation)
-            .FirstOrDefaultAsync(e => e.EId == id);
+        var employee = await _context.TblEmployees.FindAsync(id);
+        if (employee == null) return null;
         
-        if(employee == null) return null;
-        
-        employee.EStatus = "Z";
-        
-        await _context.SaveChangesAsync();
+        var wasAlreadyInactive = employee.EStatus == "Z";
+        if (!wasAlreadyInactive)
+        {
+            employee.EStatus = "Z";
+            await _context.SaveChangesAsync();
+        }
 
-        return _mapper.Map<EmployeeResponse.DisableEmployeeResponse>(employee);
+        var response = new EmployeeResponse.DisableEmployeeResponse();
+        response.AlreadyInactive = wasAlreadyInactive;
+
+        return response;
     }
 }

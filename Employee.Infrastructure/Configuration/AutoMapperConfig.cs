@@ -9,7 +9,6 @@ public class AutoMapperConfig : Profile
     public AutoMapperConfig()
     {
         CreateMap<TblEmployees, EmployeeResponse.DisableEmployeeResponse>()
-            .ForMember(dest => dest.EId, opt => opt.MapFrom(src => src.EId))
-            .ForMember(dest => dest.EStatusNavigation, opt => opt.MapFrom(src => src.EStatusNavigation));
+            .ForMember(dest => dest.EStatus, opt => opt.MapFrom(src => src.EStatus![0]));
     }
 }

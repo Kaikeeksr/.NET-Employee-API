@@ -21,14 +21,23 @@ public class EmployeesService : ValidationService, IEmployeesService
     {
         var employeesList = await _repository.GetAllAsync();
 
-        if (employeesList.Count == 0) AddMessage($"Nenhum usuário foi encontrado");
+        if (employeesList.Count == 0) AddMessage($"None employee was found");
 
         return employeesList;
     }
 
-    public Task<EmployeeResponse.DisableEmployeeResponse> DisableEmployee(int id)
+    public async Task<EmployeeResponse.DisableEmployeeResponse> DeactivateEmployeeAsync(int id)
     {
-        var disableEmployeeResponse = _repository.DisableEmployeeAsync(id);
-        return disableEmployeeResponse;
+        var resp = await _repository.SetEmployeeInactiveAsync(id);
+
+        var message = resp switch
+        {
+            null => $"No employee was found for the id {id}",
+            { AlreadyInactive: true } => $"Employee with id {id} is already inactive",
+            _ => $"Employee with id {id} has been deactivated successfully"
+        };
+
+        AddMessage(message);
+        return resp;
     }
 }

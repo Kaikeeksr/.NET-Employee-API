@@ -5,5 +5,5 @@ namespace Employee.Domain.Interfaces.Repositories;
 public interface IEmployeesRepository
 {
     Task<List<TblEmployees>> GetAllAsync();
-    Task<EmployeeResponse.DisableEmployeeResponse> DisableEmployeeAsync(int id);
+    Task<EmployeeResponse.DisableEmployeeResponse> SetEmployeeInactiveAsync(int id);
 }

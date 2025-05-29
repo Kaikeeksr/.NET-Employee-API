@@ -37,7 +37,7 @@ public class EmployeeController : MainController
     [Route("v{version:apiVersion}/disable-employee/{id}")]
     public async Task<IActionResult> DisableEmployee(int id)
     {
-        var employee = await _service.DisableEmployee(id);
+        var employee = await _service.DeactivateEmployeeAsync(id);
         return CustomResponse(employee);
     }
 }

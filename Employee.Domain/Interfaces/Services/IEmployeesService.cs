@@ -5,5 +5,5 @@ namespace Employee.Domain.Interfaces.Services;
 public interface IEmployeesService
 {
     Task<List<TblEmployees>> GetAllEmployees();
-    Task<EmployeeResponse.DisableEmployeeResponse> DisableEmployee(int id);
+    Task<EmployeeResponse.DisableEmployeeResponse> DeactivateEmployeeAsync(int id);
 }
