@@ -1,5 +1,6 @@
 ﻿using System.IO.Compression;
 using Employee.API.Configurations;
+using Employee.Infrastructure.Configuration;
 using Employee.Infrastructure.EF;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,7 @@ public class Startup
         services.AddWebApiConfiguration(Configuration);
         services.AddSwaggerConfiguration();
         services.AddEndpointsApiExplorer();
+        services.AddAutoMapper(typeof(AutoMapperConfig));
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
