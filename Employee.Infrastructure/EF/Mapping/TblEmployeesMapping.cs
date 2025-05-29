@@ -42,8 +42,8 @@ namespace Employee.Infrastructure.EF.Mapping
                 .HasColumnName("e_tel")
                 .HasMaxLength(12);
 
-            builder.Property(e => e.EDepartament)
-                .HasColumnName("e_departament")
+            builder.Property(e => e.EDepartment)
+                .HasColumnName("e_department")
                 .HasMaxLength(50);
 
             builder.Property(e => e.EGender)

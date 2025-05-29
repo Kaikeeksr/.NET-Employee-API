@@ -12,7 +12,7 @@ public partial class TblEmployees
 
     public string? ETel { get; set; }
 
-    public string? EDepartament { get; set; }
+    public string? EDepartment { get; set; }
 
     public string? EGender { get; set; }
 

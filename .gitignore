@@ -7,6 +7,23 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
 
+.idea/
+.vs/
+.vscode/
+
+[Pp]ublish/
+
+*.db
+*.sqlite
+
+docker-compose.override.yml
+*.env
+
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

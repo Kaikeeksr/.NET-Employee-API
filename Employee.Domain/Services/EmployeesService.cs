@@ -2,6 +2,7 @@
 using Employee.Domain.Interfaces.Repositories;
 using Employee.Domain.Interfaces.Services;
 using Employee.Domain.Models.Responses;
+using Employee.Domain.Models.Requests;
 using Employee.Domain.Utils;
 
 namespace Employee.Domain.Services;
@@ -26,11 +27,11 @@ public class EmployeesService : ValidationService, IEmployeesService
         return employeesList;
     }
 
-    public async Task<EmployeeResponse.DisableEmployeeResponse> DeactivateEmployeeAsync(int id)
+    public async Task<EmployeeResponse.DeactivateEmployeeResponse> DeactivateEmployeeAsync(int id)
     {
-        var resp = await _repository.SetEmployeeInactiveAsync(id);
+        var res = await _repository.SetEmployeeInactiveAsync(id);
 
-        var message = resp switch
+        var message = res switch
         {
             null => $"No employee was found for the id {id}",
             { AlreadyInactive: true } => $"Employee with id {id} is already inactive",
@@ -38,6 +39,29 @@ public class EmployeesService : ValidationService, IEmployeesService
         };
 
         AddMessage(message);
-        return resp;
+        return res;
+    }
+
+    public async Task<EmployeeResponse.ActivateEmployeeResponse> ActivateEmployeeAsync(int id)
+    {
+        var res = await _repository.SetEmployeeActiveAsync(id);
+        
+        var message = res switch
+        {
+            null => $"No employee was found for the id {id}",
+            { AlreadyActive: true } => $"Employee with id {id} is already active",
+            _ => $"Employee with id {id} has been activated successfully"
+        };
+        
+        AddMessage(message);
+        return res;
+    }
+
+    public async Task<EmployeeResponse.CreateEmployeeResponse> CreateEmployeeAsync(EmployeeRequest.CreateEmployeeRequest request)
+    {
+        if (!ExecuteValidations(new CreateEmployeeRequestValidator(), request)) return null;
+        
+        var res = await _repository.CreateEmployeeAsync(request);
+        return res;
     }
 }

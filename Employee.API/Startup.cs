@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using dotenv.net;
 using Employee.API.Configurations;
 using Employee.Infrastructure.Configuration;
 using Employee.Infrastructure.EF;
@@ -14,15 +15,19 @@ public class Startup
 
     public Startup(IConfiguration configuration, IWebHostEnvironment env)
     {
+        DotEnv.Load();
         Configuration = configuration;
         Env = env;
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
+        var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
+                               ?? Configuration.GetConnectionString("CleverCloud");
+        
         services.AddDbContext<CleverCloudDbContext>(options =>
         {
-            options.UseMySQL(Configuration.GetConnectionString("CleverCloud"));
+            options.UseMySQL(connectionString);
         });
 
         services.Configure<GzipCompressionProviderOptions>(options => { options.Level = CompressionLevel.Optimal; });
