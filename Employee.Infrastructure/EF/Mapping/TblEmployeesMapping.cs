@@ -42,8 +42,8 @@ namespace Employee.Infrastructure.EF.Mapping
                 .HasColumnName("e_tel")
                 .HasMaxLength(12);
 
-            builder.Property(e => e.EDepartament)
-                .HasColumnName("e_departament")
+            builder.Property(e => e.EDepartment)
+                .HasColumnName("e_department")
                 .HasMaxLength(50);
 
             builder.Property(e => e.EGender)
@@ -57,6 +57,9 @@ namespace Employee.Infrastructure.EF.Mapping
             builder.Property(e => e.CreatedAt)
                 .HasColumnName("created_at");
 
+            builder.Property(e => e.UpdatedAt)
+                .HasColumnName("updated_at");
+            
             builder.Property(e => e.EStatus)
                 .HasColumnName("e_status")
                 .HasMaxLength(1);
