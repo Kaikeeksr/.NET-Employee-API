@@ -18,7 +18,9 @@ public static class DIConfiguration
 
         //Services
         services.AddScoped<IEmployeesService, EmployeesService>();
-
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IAdminService, AdminService>();
+        
         //Repositories
         services.AddScoped<IEmployeesRepository, EmployeesRepository>();
         return services;
