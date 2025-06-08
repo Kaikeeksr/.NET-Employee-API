@@ -1,4 +1,4 @@
-# 📦 .NET 9 API
+# 📦 .NET 9 API - (🏗️ Projeto em construção...)
 
 API RESTful construída em **.NET 9**, seguindo a arquitetura em **3 camadas**:
 
