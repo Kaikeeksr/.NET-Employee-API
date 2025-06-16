@@ -14,8 +14,6 @@ public partial class TblEmployees
 
     public string? ETel { get; set; }
 
-    public string? EDepartment { get; set; }
-
     public string? EGender { get; set; }
 
     public string? EWage { get; set; }
@@ -27,7 +25,12 @@ public partial class TblEmployees
     public string? EStatus { get; set; }
 
     public string? EOrigem { get; set; }
+    
+    public int? DepartmentId { get; set; }
 
     [JsonIgnore]
     public virtual TblStatus? EStatusNavigation { get; set; }
+    
+    [JsonIgnore]
+    public virtual TblDepartments? EDepartmentNavigation { get; set; }
 }

@@ -34,6 +34,12 @@ public class EmployeesRepository : IEmployeesRepository
          return employee;
     }
 
+/*    public Task<List<TblEmployees>> GetAllEmployeesByDepartmentAsync(string department)
+    {
+        var employeesList = _context.TblEmployees.Where(e => e.EDepartment == department).ToListAsync();
+        return employeesList; 
+    }
+*/
     public async Task<EmployeeResponse.DeactivateEmployeeResponse?> SetEmployeeInactiveAsync(int id)
     {
         var employee = await _context.TblEmployees.FindAsync(id);

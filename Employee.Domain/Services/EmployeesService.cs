@@ -11,6 +11,8 @@ public class EmployeesService : ValidationService, IEmployeesService
 {
     private readonly IEmployeesRepository _repository;
     
+    // array fixo provisório
+    private readonly string[] _departmentList = {"Design", "Support", "Legal", "Marketing", "IT", "Logistics", "Accounting"};
     public EmployeesService(
         IEmployeesRepository repository,
         INotificationService notificationService) : base(notificationService)
@@ -26,6 +28,17 @@ public class EmployeesService : ValidationService, IEmployeesService
 
         return employeesList;
     }
+
+   /* public async Task<List<TblEmployees>> GetAllEmployeesByDepartment(string department)
+    {
+        if (!_departmentList.Contains(department))
+        {
+            AddMessage("Invalid department");
+            return null;
+        }
+        
+        return await _repository.GetAllEmployeesByDepartmentAsync(department);
+    }*/
 
     public async Task<TblEmployees?> GetOneEmployeeById(int id)
     {

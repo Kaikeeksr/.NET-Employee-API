@@ -14,7 +14,8 @@ public partial class CleverCloudDbContext : IdentityDbContext<IdentityUser, Iden
 
     public DbSet<TblEmployees> TblEmployees { get; set; }
     public DbSet<TblStatus> TblStatuses { get; set; }
-
+    public DbSet<TblDepartments> TblDepartments { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

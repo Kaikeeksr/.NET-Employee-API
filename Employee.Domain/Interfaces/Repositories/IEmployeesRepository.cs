@@ -7,6 +7,7 @@ public interface IEmployeesRepository
 {
     Task<List<TblEmployees>> GetAllAsync();
     Task<TblEmployees?> GetOneAsync(int id);
+    //Task<List<TblEmployees>> GetAllEmployeesByDepartmentAsync(string department);
     Task<EmployeeResponse.DeactivateEmployeeResponse?> SetEmployeeInactiveAsync(int id);
     Task<EmployeeResponse.ActivateEmployeeResponse?> SetEmployeeActiveAsync(int id);
     Task<EmployeeResponse.CreateEmployeeResponse?> CreateEmployeeAsync(EmployeeRequest.CreateEmployeeRequest request);

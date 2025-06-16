@@ -42,10 +42,6 @@ namespace Employee.Infrastructure.EF.Mapping
                 .HasColumnName("e_tel")
                 .HasMaxLength(12);
 
-            builder.Property(e => e.EDepartment)
-                .HasColumnName("e_department")
-                .HasMaxLength(50);
-
             builder.Property(e => e.EGender)
                 .HasColumnName("e_gender")
                 .HasMaxLength(12);
@@ -68,10 +64,19 @@ namespace Employee.Infrastructure.EF.Mapping
                 .HasColumnName("e_origem")
                 .HasMaxLength(15);
 
+            builder.Property(e => e.DepartmentId)
+                .HasColumnName("department_id")
+                .IsRequired();
+
             builder.HasOne(e => e.EStatusNavigation)
                 .WithMany()
                 .HasForeignKey(e => e.EStatus)
                 .HasConstraintName("fk_e_status");
+            
+            builder.HasOne(e => e.EDepartmentNavigation)
+                .WithMany(d => d.Employees)
+                .HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }
