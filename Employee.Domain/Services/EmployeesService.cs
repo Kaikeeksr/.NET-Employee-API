@@ -1,8 +1,8 @@
 ﻿using Employee.Domain.Interfaces;
 using Employee.Domain.Interfaces.Repositories;
 using Employee.Domain.Interfaces.Services;
-using Employee.Domain.Models.Responses;
 using Employee.Domain.Models.Requests;
+using Employee.Domain.Models.Responses;
 using Employee.Domain.Utils;
 
 namespace Employee.Domain.Services;
@@ -11,8 +11,6 @@ public class EmployeesService : ValidationService, IEmployeesService
 {
     private readonly IEmployeesRepository _repository;
     
-    // array fixo provisório
-    private readonly string[] _departmentList = {"Design", "Support", "Legal", "Marketing", "IT", "Logistics", "Accounting"};
     public EmployeesService(
         IEmployeesRepository repository,
         INotificationService notificationService) : base(notificationService)
@@ -20,7 +18,7 @@ public class EmployeesService : ValidationService, IEmployeesService
         _repository = repository;
     }
 
-    public async Task<List<TblEmployees>> GetAllEmployees()
+    public async Task<List<EmployeeResponse.GetEmployeeResponse>> GetAllEmployees()
     {
         var employeesList = await _repository.GetAllAsync();
 
@@ -29,18 +27,17 @@ public class EmployeesService : ValidationService, IEmployeesService
         return employeesList;
     }
 
-   /* public async Task<List<TblEmployees>> GetAllEmployeesByDepartment(string department)
+    public async Task<List<EmployeeResponse.GetEmployeeResponse?>> GetAllEmployeesByDepartment(int departmentId)
     {
-        if (!_departmentList.Contains(department))
-        {
-            AddMessage("Invalid department");
-            return null;
-        }
-        
-        return await _repository.GetAllEmployeesByDepartmentAsync(department);
-    }*/
+        var res = await _repository.GetAllEmployeesByDepartmentAsync(departmentId);
 
-    public async Task<TblEmployees?> GetOneEmployeeById(int id)
+        if (res.Count >= 1) return res;
+        
+        AddMessage($"None employee was found for the department");
+        return res;
+    }
+
+    public async Task<EmployeeResponse.GetEmployeeResponse?> GetOneEmployeeById(int id)
     {
         var employee = await _repository.GetOneAsync(id);
 

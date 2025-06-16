@@ -16,7 +16,7 @@ public partial class TblEmployees
 
     public string? EGender { get; set; }
 
-    public string? EWage { get; set; }
+    public required decimal EWage { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     

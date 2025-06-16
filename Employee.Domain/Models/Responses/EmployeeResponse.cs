@@ -1,6 +1,29 @@
 ﻿namespace Employee.Domain.Models.Responses;
 public class EmployeeResponse
 {
+    public class GetEmployeeResponse
+    {
+        public int EId { get; set; }
+
+        public string EName { get; set; } = null!;
+
+        public string ECpf { get; set; } = null!;
+
+        public string EEmail { get; set; } = null!;
+
+        public string? ETel { get; set; }
+
+        public string? EGender { get; set; }
+
+        public required decimal EWage { get; set; }
+
+        public required DateTime CreatedAt { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
+        public required string Department { get; set; }
+    }
+
     public class DeactivateEmployeeResponse
     {
         public int EId { get; set; }

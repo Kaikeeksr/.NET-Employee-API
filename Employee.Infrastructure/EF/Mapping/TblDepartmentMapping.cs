@@ -21,5 +21,8 @@ public class TblDepartmentMapping : IEntityTypeConfiguration<TblDepartments>
             .IsRequired()
             .HasMaxLength(50);
         
+        builder.Property(x => x.IsActive)
+            .HasColumnName("is_active")
+            .IsRequired();
     }
 }

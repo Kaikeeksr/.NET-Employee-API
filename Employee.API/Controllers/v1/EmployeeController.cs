@@ -16,16 +16,6 @@ namespace Employee.API.Controllers.v1;
 public class EmployeeController : MainController
 {
     private readonly IEmployeesService _service;
-    public enum  Department
-    {
-        Design,
-        Support,
-        Legal,
-        Marketing,
-        IT,
-        Logistics,
-        Accounting
-    }
     
     public EmployeeController(
         INotificationService notificationService,
@@ -43,15 +33,15 @@ public class EmployeeController : MainController
         return CustomResponse(employeeList);
     }
 
-    /*[HttpGet("department/{department}")]
+    [HttpGet("by-department/{departmentId}")]
     [SwaggerOperation(Tags = new[] { "GET" })]
     [ProducesResponseType(typeof(List<TblEmployees>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetEmployeeByDepartment(Department department)
+    public async Task<IActionResult> GetEmployeeByDepartment(int departmentId)
     {
-        var employeeList = await _service.GetAllEmployeesByDepartment(department.ToString());
+        var employeeList = await _service.GetAllEmployeesByDepartment(departmentId);
         return CustomResponse(employeeList);
-    }*/
+    }
 
     [HttpGet("{id}")]
     [SwaggerOperation(Tags = new[] {"GET"})]

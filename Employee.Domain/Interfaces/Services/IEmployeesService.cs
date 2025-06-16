@@ -5,9 +5,9 @@ namespace Employee.Domain.Interfaces.Services;
 
 public interface IEmployeesService
 {
-    Task<List<TblEmployees>> GetAllEmployees();
-   //Task<List<TblEmployees>> GetAllEmployeesByDepartment(string department);
-    Task<TblEmployees?> GetOneEmployeeById(int id);
+    Task<List<EmployeeResponse.GetEmployeeResponse>> GetAllEmployees();
+    Task<List<EmployeeResponse.GetEmployeeResponse?>> GetAllEmployeesByDepartment(int departmentId);
+    Task<EmployeeResponse.GetEmployeeResponse?> GetOneEmployeeById(int id);
     Task<EmployeeResponse.DeactivateEmployeeResponse?> DeactivateEmployeeAsync(int id);
     Task<EmployeeResponse.ActivateEmployeeResponse?> ActivateEmployeeAsync(int id);
     Task<EmployeeResponse.CreateEmployeeResponse?> CreateEmployeeAsync(EmployeeRequest.CreateEmployeeRequest employee);

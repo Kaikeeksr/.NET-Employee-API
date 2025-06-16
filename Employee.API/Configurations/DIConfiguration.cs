@@ -20,9 +20,11 @@ public static class DIConfiguration
         services.AddScoped<IEmployeesService, EmployeesService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAdminService, AdminService>();
+        services.AddScoped<IDepartmentsService, DepartmentsService>();
         
         //Repositories
         services.AddScoped<IEmployeesRepository, EmployeesRepository>();
+        services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
         return services;
     }
 }
