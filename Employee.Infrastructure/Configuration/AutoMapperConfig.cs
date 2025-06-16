@@ -9,6 +9,12 @@ public class AutoMapperConfig : Profile
 {
     public AutoMapperConfig()
     {
+        // Get
+        CreateMap<TblEmployees, EmployeeResponse.GetEmployeeResponse>()
+            .ForMember(dest => dest.Department,
+                        opt => opt.MapFrom(src => src.EDepartmentNavigation != null ? src.EDepartmentNavigation.Department : ""))
+            .ReverseMap();
+
         // Create
         CreateMap<TblEmployees, EmployeeResponse.CreateEmployeeResponse>()
             .ForMember(dest => dest.Eid, opt => opt.MapFrom(src => src.EId))

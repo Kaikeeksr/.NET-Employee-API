@@ -20,7 +20,7 @@ public class EmployeesService : ValidationService, IEmployeesService
         _repository = repository;
     }
 
-    public async Task<List<TblEmployees>> GetAllEmployees()
+    public async Task<List<EmployeeResponse.GetEmployeeResponse>> GetAllEmployees()
     {
         var employeesList = await _repository.GetAllAsync();
 
@@ -40,7 +40,7 @@ public class EmployeesService : ValidationService, IEmployeesService
         return await _repository.GetAllEmployeesByDepartmentAsync(department);
     }*/
 
-    public async Task<TblEmployees?> GetOneEmployeeById(int id)
+    public async Task<EmployeeResponse.GetEmployeeResponse?> GetOneEmployeeById(int id)
     {
         var employee = await _repository.GetOneAsync(id);
 
