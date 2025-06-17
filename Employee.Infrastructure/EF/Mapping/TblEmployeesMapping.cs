@@ -60,8 +60,8 @@ namespace Employee.Infrastructure.EF.Mapping
                 .HasColumnName("e_status")
                 .HasMaxLength(1);
 
-            builder.Property(e => e.EOrigem)
-                .HasColumnName("e_origem")
+            builder.Property(e => e.ESource)
+                .HasColumnName("e_source")
                 .HasMaxLength(15);
 
             builder.Property(e => e.DepartmentId)

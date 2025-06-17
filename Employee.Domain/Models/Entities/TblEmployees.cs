@@ -24,7 +24,7 @@ public partial class TblEmployees
 
     public string? EStatus { get; set; }
 
-    public string? EOrigem { get; set; }
+    public string? ESource { get; set; }
     
     public int? DepartmentId { get; set; }
 
