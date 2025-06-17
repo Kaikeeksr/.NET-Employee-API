@@ -40,8 +40,40 @@ public class ReportsRepository : IReportsRepository
         return (departmentSummary ?? null)!;
     }
 
-    public Task<string> GenerateAllDepartmentsSummaryReportAsync()
+    public async Task<ReportsResponse.AllDepartmentsSummary> GenerateAllDepartmentsSummaryReportAsync()
     {
-        throw new NotImplementedException();
+        var result = await _context.TblEmployees
+            .GroupBy(e => new { e.DepartmentId, e.EDepartmentNavigation.Department })
+            .Select(g => new
+            {
+                Department = new ReportsResponse.DepartmentSummary()
+                {
+                    DepartmentId = g.Key.DepartmentId,
+                    Name = g.Key.Department,
+                    TotalEmployees = g.Count(),
+                    ActiveEmployees = g.Count(e => e.EStatus == "A"),
+                    InactiveEmployees = g.Count(e => e.EStatus == "Z"),
+                    Payroll = (int)(g.Sum(e => (decimal?)e.EWage) ?? 0m)
+                },
+                Totals = new
+                {
+                    TotalEmployees = g.Count(),
+                    ActiveEmployees = g.Count(e => e.EStatus == "A"),
+                    InactiveEmployees = g.Count(e => e.EStatus == "Z"),
+                    Payroll = g.Sum(e => (decimal?)e.EWage) ?? 0m
+                }
+            })
+            .ToListAsync();
+        
+        var summary = new ReportsResponse.AllDepartmentsSummary()
+        {
+            TotalEmployees = result.Sum(x => x.Totals.TotalEmployees),
+            ActiveEmployees = result.Sum(x => x.Totals.ActiveEmployees),
+            InactiveEmployees = result.Sum(x => x.Totals.InactiveEmployees),
+            TotalPayroll = (float)result.Sum(x => x.Totals.Payroll),
+            Departments = result.Select(x => x.Department).ToList()
+        };
+
+        return summary;
     }
 }

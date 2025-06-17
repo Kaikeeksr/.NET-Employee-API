@@ -30,8 +30,16 @@ public class ReportsService : ValidationService, IReportsService
         return res;
     }
 
-    public Task<string> GenerateAllDepartmentsSummaryReport()
+    public Task<ReportsResponse.AllDepartmentsSummary> GenerateAllDepartmentsSummaryReport()
     {
-        throw new NotImplementedException();
+        var res = _repository.GenerateAllDepartmentsSummaryReportAsync();
+
+        if (res == null)
+        {
+            AddMessage("Departments Summary Report is empty");
+            return null;
+        }
+        
+        return res;
     }
 }
