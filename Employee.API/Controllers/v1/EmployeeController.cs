@@ -25,7 +25,6 @@ public class EmployeeController : MainController
     }
     
     [HttpGet]
-    [SwaggerOperation(Tags = new[] {"GET"})]
     [ProducesResponseType(typeof(List<TblEmployees>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllAsync()
     {
@@ -34,7 +33,6 @@ public class EmployeeController : MainController
     }
 
     [HttpGet("by-department/{departmentId}")]
-    [SwaggerOperation(Tags = new[] { "GET" })]
     [ProducesResponseType(typeof(List<TblEmployees>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetEmployeeByDepartment(int departmentId)
@@ -44,7 +42,6 @@ public class EmployeeController : MainController
     }
 
     [HttpGet("{id}")]
-    [SwaggerOperation(Tags = new[] {"GET"})]
     [ProducesResponseType(typeof(TblEmployees), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByIdAsync(int id)
@@ -54,7 +51,6 @@ public class EmployeeController : MainController
     }
 
     [HttpPost]
-    [SwaggerOperation(Tags = new[] {"POST"})]
     [ProducesResponseType(typeof(EmployeeResponse.CreateEmployeeResponse), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateEmployee(EmployeeRequest.CreateEmployeeRequest employee)
     {
@@ -63,7 +59,6 @@ public class EmployeeController : MainController
     }
 
     [HttpPatch("{id}"),
-    SwaggerOperation(Tags = new[] {"PATCH"}),
     ProducesResponseType(typeof(EmployeeResponse.UpdateEmployeeResponse), StatusCodes.Status201Created)]
     public async Task<IActionResult> UpdateEmployee(int id, EmployeeRequest.UpdateEmployeeRequest employee)
     {
@@ -72,7 +67,6 @@ public class EmployeeController : MainController
     }
     
     [HttpPut("{id}/deactivate")]
-    [SwaggerOperation(Tags = new[] {"PUT"})]
     [ProducesResponseType(typeof(EmployeeResponse.DeactivateEmployeeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeactivateEmployee(int id)
@@ -82,7 +76,6 @@ public class EmployeeController : MainController
     }
     
     [HttpPut("{id}/activate")]
-    [SwaggerOperation(Tags = new[] {"PUT"})]
     [ProducesResponseType(typeof(EmployeeResponse.ActivateEmployeeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ActivateEmployee(int id)

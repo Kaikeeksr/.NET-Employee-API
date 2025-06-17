@@ -23,7 +23,6 @@ public class DepartmentController : MainController
     }
 
     [HttpGet]
-    [SwaggerOperation(Tags = new[] { "GET" })]
     [ProducesResponseType(typeof(List<TblDepartments>), statusCode: StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDepartments()
