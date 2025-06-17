@@ -2,7 +2,7 @@
 
 namespace Employee.Domain;
 
-public partial class TblEmployees
+public class TblEmployees
 {
     public int EId { get; set; }
 
