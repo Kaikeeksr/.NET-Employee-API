@@ -1,5 +1,5 @@
-﻿using System.Globalization;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using Employee.Domain.Global.Values;
 using FluentValidation;
 
 namespace Employee.Domain.Models.Requests;
@@ -12,9 +12,10 @@ public class EmployeeRequest
         public string ECpf { get; set; } = null!;
         public string EEmail { get; set; } = null!;
         public string? ETel { get; set; }
-        public string? EDepartment { get; set; }
         public string? EGender { get; set; }
-        public string? EWage { get; set; }
+        public decimal EWage { get; set; }
+        
+        public int DepartmentId { get; set; }
         
         [JsonIgnore]
         public string? EStatus { get; set; }
@@ -23,18 +24,19 @@ public class EmployeeRequest
         public DateTime CreatedAt { get; set; }
         
         [JsonIgnore] 
-        public string EOrigem { get; set; } = "API .NET";
+        public string ESource { get; set; } = "API .NET";
     }
 
     public class UpdateEmployeeRequest
     {
-        public string EName { get; set; } = null!;
-        public string ECpf { get; set; } = null!;
-        public string EEmail { get; set; } = null!;
+        public string? EName { get; set; } = null!;
+        public string? ECpf { get; set; } = null!;
+        public string? EEmail { get; set; } = null!;
         public string? ETel { get; set; }
-        public string? EDepartment { get; set; }
+        
+        public int? DepartmentId { get; set; }
         public string? EGender { get; set; }
-        public string? EWage { get; set; }
+        public decimal? EWage { get; set; }
         
         [JsonIgnore] 
         public DateTime UpdatedAt { get; set; }
@@ -60,11 +62,11 @@ public class CreateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
         RuleFor(x => x.ETel)
             .MaximumLength(20).WithMessage("Phone number must be at most 20 characters long.");
 
-        RuleFor(x => x.EDepartment)
-            .Must(BeAValidDepartment)
-            .When(x => !string.IsNullOrWhiteSpace(x.EDepartment))
-            .WithMessage(
-                "Invalid department. Allowed values: Design, Support, Legal, Marketing, IT, Accounting, Logistics.");
+        RuleFor(x => x.DepartmentId)
+            .Must(departmentId => ValidDepartments.Departments.ContainsKey(departmentId))
+            .When(x => x.DepartmentId != 0)
+            .WithMessage(departmentId => 
+                $"Invalid department id. Allowed values: {string.Join(", ", ValidDepartments.Departments.Keys)}.");
 
         RuleFor(x => x.EGender)
             .Must(gender => new[] { "F", "M", "O", "N" }.Contains(gender))
@@ -72,20 +74,9 @@ public class CreateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
             .WithMessage("Invalid gender. Allowed values: F, M, O, N.");
 
         RuleFor(x => x.EWage)
-            .Must(BeAValidDecimal)
-            .When(x => !string.IsNullOrWhiteSpace(x.EWage))
-            .WithMessage("Invalid salary. Valid format example: 5575.17.");
-    }
-
-    private bool BeAValidDepartment(string? department)
-    {
-        var validDepartments = new[] { "Design", "Support", "Legal", "Marketing", "IT", "Accounting", "Logistics" };
-        return validDepartments.Contains(department);
-    }
-
-    private bool BeAValidDecimal(string? wage)
-    {
-        return decimal.TryParse(wage, NumberStyles.Number, CultureInfo.InvariantCulture, out _);
+            .GreaterThan(0)
+            .WithMessage("Invalid salary. Valid format example: 5575.17.")
+            .When(x => x.EWage > 0);
     }
 }
 
@@ -109,30 +100,34 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
             .MaximumLength(20).WithMessage("Phone number must be at most 20 characters long.")
             .When(x => !string.IsNullOrWhiteSpace(x.ETel));
 
-        RuleFor(x => x.EDepartment)
-            .Must(BeAValidDepartment)
-            .WithMessage("Invalid department. Allowed values: Design, Support, Legal, Marketing, IT, Accounting, Logistics.")
-            .When(x => !string.IsNullOrWhiteSpace(x.EDepartment));
-
-        RuleFor(x => x.EGender)
-            .Must(gender => new[] { "F", "M", "O", "N" }.Contains(gender))
-            .WithMessage("Invalid gender. Allowed values: F, M, O, N.")
-            .When(x => !string.IsNullOrWhiteSpace(x.EGender));
+        RuleFor(x => x.DepartmentId)
+            .Must(id => id.HasValue && ValidDepartments.Departments.ContainsKey(id.Value))
+            .When(x => x.DepartmentId.HasValue)
+            .WithMessage(_ =>
+                $"Invalid department id. Allowed values: {string.Join(", ", ValidDepartments.Departments.Keys)}.");
 
         RuleFor(x => x.EWage)
-            .Must(BeAValidDecimal)
+            .GreaterThan(0)
             .WithMessage("Invalid salary. Valid format example: 5575.17.")
-            .When(x => !string.IsNullOrWhiteSpace(x.EWage));
-    }
+            .When(x => x.EWage.HasValue);
 
-    private bool BeAValidDepartment(string? department)
-    {
-        var validDepartments = new[] { "Design", "Support", "Legal", "Marketing", "IT", "Accounting", "Logistics" };
-        return validDepartments.Contains(department);
-    }
+        RuleFor(x => x)
+            .Custom((request, context) =>
+            {
+                var hasAnyField =
+                    !string.IsNullOrWhiteSpace(request.EName) ||
+                    !string.IsNullOrWhiteSpace(request.ECpf) ||
+                    !string.IsNullOrWhiteSpace(request.EEmail) ||
+                    !string.IsNullOrWhiteSpace(request.ETel) ||
+                    !string.IsNullOrWhiteSpace(request.EGender) ||
+                    request.DepartmentId.HasValue ||
+                    request.EWage.HasValue;
 
-    private bool BeAValidDecimal(string? wage)
-    {
-        return decimal.TryParse(wage, NumberStyles.Number, CultureInfo.InvariantCulture, out _);
+                if (!hasAnyField)
+                {
+                    context.AddFailure("At least one field must be provided for update.");
+                }
+            });
     }
 }
+

@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 using dotenv.net;
 using Employee.API.Configurations;
+using Employee.Domain.Global.Values;
 using Employee.Infrastructure.Configuration;
 using Employee.Infrastructure.EF;
 using Microsoft.AspNetCore.Identity;
@@ -67,8 +68,10 @@ public class Startup
         services.AddAutoMapper(typeof(AutoMapperConfig));
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
     { 
+        SetGlobalValues.PopulateValidDepartments(serviceProvider).GetAwaiter().GetResult();
+            
         app.UseRouting();
         app.UseCors("CorsPolicy");
         app.UseResponseCompression();

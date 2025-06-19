@@ -12,7 +12,9 @@ public class AutoMapperConfig : Profile
         // Get
         CreateMap<TblEmployees, EmployeeResponse.GetEmployeeResponse>()
             .ForMember(dest => dest.Department,
-                        opt => opt.MapFrom(src => src.EDepartmentNavigation != null ? src.EDepartmentNavigation.Department : ""))
+                opt => opt.MapFrom(src => src.EDepartmentNavigation != null ? src.EDepartmentNavigation.Department : ""))
+            .ForMember(dest => dest.Gender,
+                opt => opt.MapFrom(src => src.EGenderNavigation != null ? src.EGenderNavigation.Gender : ""))
             .ReverseMap();
 
         // Create
@@ -24,11 +26,11 @@ public class AutoMapperConfig : Profile
         CreateMap<TblEmployees, EmployeeRequest.CreateEmployeeRequest>().ReverseMap();
         
         // Update
-        CreateMap<EmployeeRequest.UpdateEmployeeRequest ,TblEmployees>()
-            // Only maps if the request value isn't null ou empty string
+        // Mapeia UpdateEmployeeRequest -> TblEmployees ignorando nulos e strings em branco
+        CreateMap<EmployeeRequest.UpdateEmployeeRequest, TblEmployees>()
             .ForAllMembers(opt =>
                 opt.Condition((src, _, srcValue, _) =>
-                    srcValue is not null &&
+                    srcValue != null &&
                     (!(srcValue is string s) || !string.IsNullOrWhiteSpace(s))
                 )
             );

@@ -12,7 +12,7 @@ namespace Employee.API.Controllers.v1;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("v{version:apiVersion}/employees")]
+[Route("api/v{version:apiVersion}/employees")]
 public class EmployeeController : MainController
 {
     private readonly IEmployeesService _service;

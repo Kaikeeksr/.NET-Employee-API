@@ -12,16 +12,14 @@ public class EmployeeResponse
         public string EEmail { get; set; } = null!;
 
         public string? ETel { get; set; }
-
-        public string? EGender { get; set; }
-
+        
         public required decimal EWage { get; set; }
 
         public required DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
-
         public required string Department { get; set; }
+        public required string Gender { get; set; }
     }
 
     public class DeactivateEmployeeResponse

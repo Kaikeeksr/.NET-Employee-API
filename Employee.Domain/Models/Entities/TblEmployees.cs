@@ -14,8 +14,6 @@ public class TblEmployees
 
     public string? ETel { get; set; }
 
-    public string? EGender { get; set; }
-
     public required decimal EWage { get; set; }
 
     public DateTime? CreatedAt { get; set; }
@@ -27,10 +25,15 @@ public class TblEmployees
     public string? ESource { get; set; }
     
     public int? DepartmentId { get; set; }
+    
+    public int? GenderId { get; set; }
 
     [JsonIgnore]
     public virtual TblStatus? EStatusNavigation { get; set; }
     
     [JsonIgnore]
     public virtual TblDepartments? EDepartmentNavigation { get; set; }
+    
+    [JsonIgnore]
+    public virtual TblGenders? EGenderNavigation { get; set; }
 }
