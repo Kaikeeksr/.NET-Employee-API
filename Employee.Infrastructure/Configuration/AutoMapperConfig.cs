@@ -12,15 +12,15 @@ public class AutoMapperConfig : Profile
         // Get
         CreateMap<TblEmployees, EmployeeResponse.GetEmployeeResponse>()
             .ForMember(dest => dest.Department,
-                opt => opt.MapFrom(src => src.EDepartmentNavigation != null ? src.EDepartmentNavigation.Department : ""))
+                opt => opt.MapFrom(src => src.DepartmentNavigation != null ? src.DepartmentNavigation.Department : ""))
             .ForMember(dest => dest.Gender,
-                opt => opt.MapFrom(src => src.EGenderNavigation != null ? src.EGenderNavigation.Gender : ""))
+                opt => opt.MapFrom(src => src.GenderNavigation != null ? src.GenderNavigation.Gender : ""))
             .ReverseMap();
 
         // Create
         CreateMap<TblEmployees, EmployeeResponse.CreateEmployeeResponse>()
-            .ForMember(dest => dest.Eid, opt => opt.MapFrom(src => src.EId))
-            .ForMember(dest => dest.EName, opt => opt.MapFrom(src => src.EName))
+            .ForMember(dest => dest.id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.EmployeeAlreadyExists, opt => opt.Ignore());
         
         CreateMap<TblEmployees, EmployeeRequest.CreateEmployeeRequest>().ReverseMap();

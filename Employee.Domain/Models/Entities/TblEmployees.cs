@@ -4,36 +4,36 @@ namespace Employee.Domain;
 
 public class TblEmployees
 {
-    public int EId { get; set; }
+    public int Id { get; set; }
 
-    public string EName { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
-    public string ECpf { get; set; } = null!;
+    public string Cpf { get; set; } = null!;
 
-    public string EEmail { get; set; } = null!;
+    public string Email { get; set; } = null!;
 
-    public string? ETel { get; set; }
+    public string? Telephone { get; set; }
 
-    public required decimal EWage { get; set; }
+    public required decimal Wage { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     
     public DateTime? UpdatedAt { get; set; }
 
-    public string? EStatus { get; set; }
+    public string? Status { get; set; }
 
-    public string? ESource { get; set; }
+    public string? Source { get; set; }
     
     public int? DepartmentId { get; set; }
     
     public int? GenderId { get; set; }
 
     [JsonIgnore]
-    public virtual TblStatus? EStatusNavigation { get; set; }
+    public virtual TblStatus? StatusNavigation { get; set; }
     
     [JsonIgnore]
-    public virtual TblDepartments? EDepartmentNavigation { get; set; }
+    public virtual TblDepartments? DepartmentNavigation { get; set; }
     
     [JsonIgnore]
-    public virtual TblGenders? EGenderNavigation { get; set; }
+    public virtual TblGenders? GenderNavigation { get; set; }
 }

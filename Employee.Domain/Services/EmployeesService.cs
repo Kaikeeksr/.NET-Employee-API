@@ -93,7 +93,7 @@ public class EmployeesService : ValidationService, IEmployeesService
 
         if (!(res.EmployeeAlreadyExists)) return res;
         
-        var message = $"Employee with cpf {request.ECpf} is already registered";
+        var message = $"Employee with cpf {request.Cpf} is already registered";
         AddMessage(message);
         
         return null;

@@ -10,40 +10,40 @@ public class TblEmployeesMapping : IEntityTypeConfiguration<TblEmployees>
     {
         builder.ToTable("tbl_employees");
 
-        builder.HasKey(e => e.EId);
+        builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.EId)
-            .HasColumnName("e_id")
+        builder.Property(e => e.Id)
+            .HasColumnName("id")
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-        builder.Property(e => e.EName)
-            .HasColumnName("e_name")
+        builder.Property(e => e.Name)
+            .HasColumnName("name")
             .HasMaxLength(255)
             .IsRequired();
 
-        builder.Property(e => e.ECpf)
-            .HasColumnName("e_cpf")
+        builder.Property(e => e.Cpf)
+            .HasColumnName("cpf")
             .HasMaxLength(11)
             .IsRequired();
 
-        builder.HasIndex(e => e.ECpf)
+        builder.HasIndex(e => e.Cpf)
             .IsUnique();
 
-        builder.Property(e => e.EEmail)
-            .HasColumnName("e_email")
+        builder.Property(e => e.Email)
+            .HasColumnName("email")
             .HasMaxLength(255)
             .IsRequired();
 
-        builder.HasIndex(e => e.EEmail)
+        builder.HasIndex(e => e.Email)
             .IsUnique();
 
-        builder.Property(e => e.ETel)
-            .HasColumnName("e_tel")
+        builder.Property(e => e.Telephone)
+            .HasColumnName("telephone")
             .HasMaxLength(12);
 
-        builder.Property(e => e.EWage)
-            .HasColumnName("e_wage")
+        builder.Property(e => e.Wage)
+            .HasColumnName("wage")
             .HasMaxLength(12);
 
         builder.Property(e => e.CreatedAt)
@@ -52,12 +52,12 @@ public class TblEmployeesMapping : IEntityTypeConfiguration<TblEmployees>
         builder.Property(e => e.UpdatedAt)
             .HasColumnName("updated_at");
         
-        builder.Property(e => e.EStatus)
-            .HasColumnName("e_status")
+        builder.Property(e => e.Status)
+            .HasColumnName("status")
             .HasMaxLength(1);
 
-        builder.Property(e => e.ESource)
-            .HasColumnName("e_source")
+        builder.Property(e => e.Source)
+            .HasColumnName("source")
             .HasMaxLength(15);
 
         builder.Property(e => e.DepartmentId)
@@ -68,17 +68,17 @@ public class TblEmployeesMapping : IEntityTypeConfiguration<TblEmployees>
             .HasColumnName("gender_id")
             .IsRequired();
 
-        builder.HasOne(e => e.EStatusNavigation)
+        builder.HasOne(e => e.StatusNavigation)
             .WithMany()
-            .HasForeignKey(e => e.EStatus)
-            .HasConstraintName("fk_e_status");
+            .HasForeignKey(e => e.Status)
+            .HasConstraintName("fk_status");
         
-        builder.HasOne(e => e.EDepartmentNavigation)
+        builder.HasOne(e => e.DepartmentNavigation)
             .WithMany(d => d.Employees)
             .HasForeignKey(e => e.DepartmentId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        builder.HasOne(e => e.EGenderNavigation)
+        builder.HasOne(e => e.GenderNavigation)
             .WithMany(e => e.Employees)
             .HasForeignKey(e => e.GenderId)
             .OnDelete(DeleteBehavior.Cascade);

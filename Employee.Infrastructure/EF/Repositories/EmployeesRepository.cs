@@ -24,8 +24,8 @@ public class EmployeesRepository : IEmployeesRepository
     public async Task<List<EmployeeResponse.GetEmployeeResponse>> GetAllAsync()
     {
         return await _context.TblEmployees
-            .Where(e => e.EStatus != "Z")
-            .OrderBy(e => e.EName)
+            .Where(e => e.Status != "Z")
+            .OrderBy(e => e.Name)
             .ProjectTo<EmployeeResponse.GetEmployeeResponse>(_projectMapper)
             .AsNoTracking()
             .ToListAsync();
@@ -34,7 +34,7 @@ public class EmployeesRepository : IEmployeesRepository
     public async Task<EmployeeResponse.GetEmployeeResponse?> GetOneAsync(int id)
     {
         return await _context.TblEmployees
-            .Where(e => e.EId == id && e.EStatus != "Z")
+            .Where(e => e.Id == id && e.Status != "Z")
             .ProjectTo<EmployeeResponse.GetEmployeeResponse>(_projectMapper)
             .AsNoTracking()
             .FirstOrDefaultAsync();
@@ -43,7 +43,7 @@ public class EmployeesRepository : IEmployeesRepository
     public async Task<List<EmployeeResponse.GetEmployeeResponse?>> GetAllEmployeesByDepartmentAsync(int departmentId)
     {
         return (await _context.TblEmployees
-            .Where(e => e.EStatus != "Z" && e.DepartmentId == departmentId)
+            .Where(e => e.Status != "Z" && e.DepartmentId == departmentId)
             .ProjectTo<EmployeeResponse.GetEmployeeResponse>(_projectMapper)
             .AsNoTracking()
             .ToListAsync())!;
@@ -54,17 +54,17 @@ public class EmployeesRepository : IEmployeesRepository
         var employee = await _context.TblEmployees.FindAsync(id);
         if (employee == null) return null;
         
-        var isAlreadyInactive = employee.EStatus == "Z";
+        var isAlreadyInactive = employee.Status == "Z";
         if (!isAlreadyInactive)
         {
-            employee.EStatus = "Z";
+            employee.Status = "Z";
             await _context.SaveChangesAsync();
         }
 
         var response = new EmployeeResponse.DeactivateEmployeeResponse()
         {
-            EId = id,
-            EStatus = employee.EStatus
+            Id = id,
+            Status = employee.Status
         };
         response.AlreadyInactive = isAlreadyInactive;
 
@@ -76,17 +76,17 @@ public class EmployeesRepository : IEmployeesRepository
         var employee = await _context.TblEmployees.FindAsync(id);
         if(employee == null) return null;
         
-        var isAlreadyActive = employee.EStatus == "A";
+        var isAlreadyActive = employee.Status == "A";
         if(!isAlreadyActive)
         {
-            employee.EStatus = "A";
+            employee.Status = "A";
             await _context.SaveChangesAsync();
         }
         
         var response = new EmployeeResponse.ActivateEmployeeResponse()
         {
-            EId = id,
-            EStatus = employee.EStatus
+            Id = id,
+            Status = employee.Status
         };
         response.AlreadyActive = isAlreadyActive;
         
@@ -98,7 +98,7 @@ public class EmployeesRepository : IEmployeesRepository
         try
         {
             var employeeExists = await _context.TblEmployees
-                .AnyAsync(e => e.ECpf == employee.ECpf);
+                .AnyAsync(e => e.Cpf == employee.Cpf);
 
             if (employeeExists)
             {
@@ -108,7 +108,7 @@ public class EmployeesRepository : IEmployeesRepository
                 };
             }
 
-            employee.EStatus = "A";
+            employee.Status = "A";
             employee.CreatedAt = DateTime.Now;
             
             var employeeEntity = _mapper.Map<TblEmployees>(employee);

@@ -25,15 +25,15 @@ public class ReportsRepository : IReportsRepository
     {
         var departmentSummary = _context.TblEmployees
             .Where(e => e.DepartmentId == departmentId)
-            .GroupBy(e => new { e.DepartmentId, e.EDepartmentNavigation.Department })
+            .GroupBy(e => new { e.DepartmentId, e.DepartmentNavigation.Department })
             .Select(g => new ReportsResponse.DepartmentSummary()
             {
                 DepartmentId = g.Key.DepartmentId,
                 Name = g.Key.Department,
                 TotalEmployees = g.Count(),
-                ActiveEmployees = g.Sum(e => e.EStatus == "A" ? 1 : 0),
-                InactiveEmployees = g.Sum(e => e.EStatus == "Z" ? 1 : 0),
-                Payroll = (int)(g.Sum(e => (decimal?)e.EWage) ?? 0m)
+                ActiveEmployees = g.Sum(e => e.Status == "A" ? 1 : 0),
+                InactiveEmployees = g.Sum(e => e.Status == "Z" ? 1 : 0),
+                Payroll = (int)(g.Sum(e => (decimal?)e.Wage) ?? 0m)
             })
             .FirstOrDefaultAsync();
 
@@ -43,7 +43,7 @@ public class ReportsRepository : IReportsRepository
     public async Task<ReportsResponse.AllDepartmentsSummary> GenerateAllDepartmentsSummaryReportAsync()
     {
         var result = await _context.TblEmployees
-            .GroupBy(e => new { e.DepartmentId, e.EDepartmentNavigation.Department })
+            .GroupBy(e => new { e.DepartmentId, e.DepartmentNavigation.Department })
             .Select(g => new
             {
                 Department = new ReportsResponse.DepartmentSummary()
@@ -51,16 +51,16 @@ public class ReportsRepository : IReportsRepository
                     DepartmentId = g.Key.DepartmentId,
                     Name = g.Key.Department,
                     TotalEmployees = g.Count(),
-                    ActiveEmployees = g.Count(e => e.EStatus == "A"),
-                    InactiveEmployees = g.Count(e => e.EStatus == "Z"),
-                    Payroll = (int)(g.Sum(e => (decimal?)e.EWage) ?? 0m)
+                    ActiveEmployees = g.Count(e => e.Status == "A"),
+                    InactiveEmployees = g.Count(e => e.Status == "Z"),
+                    Payroll = (int)(g.Sum(e => (decimal?)e.Wage) ?? 0m)
                 },
                 Totals = new
                 {
                     TotalEmployees = g.Count(),
-                    ActiveEmployees = g.Count(e => e.EStatus == "A"),
-                    InactiveEmployees = g.Count(e => e.EStatus == "Z"),
-                    Payroll = g.Sum(e => (decimal?)e.EWage) ?? 0m
+                    ActiveEmployees = g.Count(e => e.Status == "A"),
+                    InactiveEmployees = g.Count(e => e.Status == "Z"),
+                    Payroll = g.Sum(e => (decimal?)e.Wage) ?? 0m
                 }
             })
             .ToListAsync();

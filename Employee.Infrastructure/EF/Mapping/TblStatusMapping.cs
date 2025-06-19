@@ -17,22 +17,22 @@ namespace Employee.Infrastructure.EF.Mapping
                 .IsRequired()   
                 .ValueGeneratedOnAdd();
 
-            builder.Property(s => s.EStatus)
+            builder.Property(s => s.Status)
                 .HasColumnName("e_status")
                 .HasMaxLength(1)
                 .IsRequired();
 
-            builder.HasIndex(s => s.EStatus)
+            builder.HasIndex(s => s.Status)
                 .IsUnique();
 
-            builder.Property(s => s.StatusDescr)
+            builder.Property(s => s.StatusDescription)
                 .HasColumnName("status_descr")
                 .HasMaxLength(35);
 
             builder.HasMany(s => s.TblEmployees)
-                .WithOne(e => e.EStatusNavigation)
-                .HasForeignKey(e => e.EStatus)
-                .HasPrincipalKey(s => s.EStatus)
+                .WithOne(e => e.StatusNavigation)
+                .HasForeignKey(e => e.Status)
+                .HasPrincipalKey(s => s.Status)
                 .HasConstraintName("fk_e_status");
         }
     }
