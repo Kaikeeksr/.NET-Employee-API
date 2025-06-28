@@ -17,8 +17,9 @@ namespace Employee.Domain.Utils
             _notificationService.AddNotification(message);
         }
 
-        protected bool ExecuteValidations<TValidation, TModel>(TValidation validation, TModel model)
-            where TValidation : AbstractValidator<TModel>
+        protected async Task<bool> ExecuteValidations<TModel>(
+            IValidator<TModel> validator,
+            TModel model)
             where TModel : class
         {
             if (model is null)
@@ -27,14 +28,11 @@ namespace Employee.Domain.Utils
                 return false;
             }
 
-            var validatorResult = validation.Validate(model);
+            var result = await validator.ValidateAsync(model);
+            if (result.IsValid) return true;
 
-            if (validatorResult.IsValid) return true;
-
-            foreach (var erro in validatorResult.Errors)
-            {
-                AddMessage(erro.ErrorMessage);
-            }
+            foreach (var err in result.Errors)
+                AddMessage(err.ErrorMessage);
 
             return false;
         }

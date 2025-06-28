@@ -1,6 +1,7 @@
 ﻿using Employee.Domain.Interfaces;
 using Employee.Domain.Interfaces.Repositories;
 using Employee.Domain.Interfaces.Services;
+using Employee.Domain.Models.Requests;
 using Employee.Domain.Services;
 using Employee.Domain.Utils;
 using Employee.Infrastructure.EF.Repositories;
@@ -22,11 +23,16 @@ public static class DIConfiguration
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IDepartmentsService, DepartmentsService>();
         services.AddScoped<IReportsService, ReportsService>();
+        services.AddScoped<ICachingService, CachingService>();
         
         //Repositories
         services.AddScoped<IEmployeesRepository, EmployeesRepository>();
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
         services.AddScoped<IReportsRepository, ReportsRepository>();
+        
+        // Validations
+        services.AddScoped<CreateEmployeeRequestValidator>();
+        services.AddScoped<UpdateEmployeeRequestValidator>();
         
         return services;
     }

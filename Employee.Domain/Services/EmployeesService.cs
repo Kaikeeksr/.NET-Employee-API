@@ -10,12 +10,18 @@ namespace Employee.Domain.Services;
 public class EmployeesService : ValidationService, IEmployeesService
 {
     private readonly IEmployeesRepository _repository;
+    private readonly CreateEmployeeRequestValidator _createValidator;
+    private readonly UpdateEmployeeRequestValidator _updateValidator;
     
     public EmployeesService(
         IEmployeesRepository repository,
+        CreateEmployeeRequestValidator createValidator,
+        UpdateEmployeeRequestValidator updateValidator,
         INotificationService notificationService) : base(notificationService)
     {
         _repository = repository;
+        _createValidator = createValidator;
+        _updateValidator = updateValidator;
     }
 
     public async Task<List<EmployeeResponse.GetEmployeeResponse>> GetAllEmployees()
@@ -87,7 +93,7 @@ public class EmployeesService : ValidationService, IEmployeesService
     public async Task<EmployeeResponse.CreateEmployeeResponse?> CreateEmployeeAsync(
         EmployeeRequest.CreateEmployeeRequest request)
     {
-        if (!ExecuteValidations(new CreateEmployeeRequestValidator(), request)) return null;
+        if (!await ExecuteValidations(_createValidator, request)) return null;
 
         var res = await _repository.CreateEmployeeAsync(request);
 
@@ -103,7 +109,7 @@ public class EmployeesService : ValidationService, IEmployeesService
     public async Task<EmployeeResponse.UpdateEmployeeResponse?> UpdateEmployeeAsync(int id,
         EmployeeRequest.UpdateEmployeeRequest request)
     {
-        if(!ExecuteValidations(new UpdateEmployeeRequestValidator(), request)) return null;
+        if (!await ExecuteValidations(_updateValidator, request)) return null;
         
         var res = await _repository.UpdateEmployeeAsync(id, request);
       
