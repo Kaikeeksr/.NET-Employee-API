@@ -7,7 +7,7 @@ namespace Employee.Domain.Services;
 
 public class DepartmentsService : ValidationService, IDepartmentsService
 {
-    private const string CACHE_KEY = "all_departments";
+    private const string CACHE_KEY = "all-departments";
     private readonly IDepartmentsRepository _repository;
     private readonly ICachingService _cache;
 

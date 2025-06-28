@@ -62,7 +62,7 @@ public class Startup
         // Redis
         services.AddStackExchangeRedisCache(o =>
         {
-            o.InstanceName = "instance";
+            o.InstanceName = "instance-";
             o.Configuration = "localhost:32768";
         });
         

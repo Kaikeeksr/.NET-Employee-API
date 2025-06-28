@@ -4,7 +4,6 @@ using Employee.Domain.Interfaces;
 using Employee.Domain.Interfaces.Services;
 using Employee.Domain.Utils;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.Swagger.Annotations;
 
 namespace Employee.API.Controllers.v1;
 
