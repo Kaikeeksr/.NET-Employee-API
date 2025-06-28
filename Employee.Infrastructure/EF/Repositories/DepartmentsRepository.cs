@@ -1,4 +1,5 @@
 ﻿using Employee.Domain;
+using Employee.Domain.Global.Values;
 using Employee.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,10 +16,26 @@ public class DepartmentsRepository : IDepartmentsRepository
     
     public async Task<List<TblDepartments>> GetAllDepartmentsAsync()
     {
-        return await _context.TblDepartments
+        if (ValidDepartments.IsUpToDate && ValidDepartments.Departments.Count > 0)
+        {
+            return ValidDepartments.Departments
+                .Select(kv => new TblDepartments {
+                    Id         = kv.Key,
+                    Department = kv.Value
+                })
+                .ToList();
+        }
+        
+        var fromDb = await _context.TblDepartments
             .Where(d => d.IsActive)
             .OrderBy(d => d.Id)
             .AsNoTracking()
             .ToListAsync();
-     }
+        
+        ValidDepartments.Departments = fromDb
+            .ToDictionary(d => d.Id, d => d.Department);
+        ValidDepartments.IsUpToDate = true;
+
+        return fromDb;
+    }
 }
