@@ -4,6 +4,7 @@ using Employee.Domain.Interfaces;
 using Employee.Domain.Interfaces.Services;
 using Employee.Domain.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Employee.Domain.Models.Responses;
 
 namespace Employee.API.Controllers.v1;
 
@@ -28,5 +29,23 @@ public class DepartmentController : MainController
     {
         var departmentList = await _service.GetAllDepartments();
         return CustomResponse(departmentList);
+    }
+
+    [HttpPatch("{id}/activate")]
+    [ProducesResponseType(typeof(DepartmentResponse.ActivateDepartment), statusCode: StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ActivateDepartmentAsync(int id)
+    {
+        var res = await _service.SetDepartmentActive(id);
+        return CustomResponse(res);
+    }
+
+    [HttpPatch("{id}/deactivate")]
+    [ProducesResponseType(typeof(DepartmentResponse.DeactivateDepartment), statusCode: StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeactivateDepartmentAsync(int id)
+    {
+        var res = await _service.SetDepartmentInactive(id);
+        return CustomResponse(res);
     }
 }

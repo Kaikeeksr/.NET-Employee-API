@@ -4,31 +4,32 @@ using Employee.Domain.Interfaces.Services;
 using Employee.Domain.Models.Requests;
 using Employee.Domain.Models.Responses;
 using Employee.Domain.Utils;
+using FluentValidation;
 
 namespace Employee.Domain.Services;
 
 public class EmployeesService : ValidationService, IEmployeesService
 {
     private readonly IEmployeesRepository _repository;
-    private readonly CreateEmployeeRequestValidator _createValidator;
-    private readonly UpdateEmployeeRequestValidator _updateValidator;
+    private readonly IValidator<EmployeeRequest.CreateEmployeeRequest> _createRequestValidator;
+    private readonly IValidator<EmployeeRequest.UpdateEmployeeRequest> _updateRequestValidator;
     
     public EmployeesService(
         IEmployeesRepository repository,
-        CreateEmployeeRequestValidator createValidator,
-        UpdateEmployeeRequestValidator updateValidator,
+        IValidator<EmployeeRequest.CreateEmployeeRequest> createRequestValidator,
+        IValidator<EmployeeRequest.UpdateEmployeeRequest> updateRequestValidator,
         INotificationService notificationService) : base(notificationService)
     {
         _repository = repository;
-        _createValidator = createValidator;
-        _updateValidator = updateValidator;
+        _createRequestValidator = createRequestValidator;
+        _updateRequestValidator = updateRequestValidator;
     }
 
     public async Task<List<EmployeeResponse.GetEmployeeResponse>> GetAllEmployees()
     {
         var employeesList = await _repository.GetAllAsync();
 
-        if (employeesList.Count == 0) AddMessage($"None employee was found");
+        if (employeesList.Count == 0) AddMessage("None employee was found");
 
         return employeesList;
     }
@@ -39,7 +40,7 @@ public class EmployeesService : ValidationService, IEmployeesService
 
         if (res.Count >= 1) return res;
         
-        AddMessage($"None employee was found for the department");
+        AddMessage("None employee was found for the department");
         return res;
     }
 
@@ -93,26 +94,27 @@ public class EmployeesService : ValidationService, IEmployeesService
     public async Task<EmployeeResponse.CreateEmployeeResponse?> CreateEmployeeAsync(
         EmployeeRequest.CreateEmployeeRequest request)
     {
-        if (!await ExecuteValidations(_createValidator, request)) return null;
-
+        if (!await ExecuteValidationsAsync(_createRequestValidator, request)) return null;
+        
         var res = await _repository.CreateEmployeeAsync(request);
 
-        if (!(res.EmployeeAlreadyExists)) return res;
+        if (!res.EmployeeAlreadyExists) return res;
         
         var message = $"Employee with cpf {request.Cpf} is already registered";
         AddMessage(message);
         
         return null;
-
     }
 
     public async Task<EmployeeResponse.UpdateEmployeeResponse?> UpdateEmployeeAsync(int id,
         EmployeeRequest.UpdateEmployeeRequest request)
     {
-        if (!await ExecuteValidations(_updateValidator, request)) return null;
+        if (!await ExecuteValidationsAsync(_updateRequestValidator, request)) return null;
         
         var res = await _repository.UpdateEmployeeAsync(id, request);
-      
-        return res ?? null;
+        
+        if (res == null) AddMessage($"Employee with id {id} not found for update.");
+        
+        return res;
     }
 }

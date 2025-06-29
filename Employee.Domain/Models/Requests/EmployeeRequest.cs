@@ -42,69 +42,54 @@ public class EmployeeRequest
     }
 }
 
-public class CreateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.CreateEmployeeRequest>
+public static class DepartmentValidationHelper
 {
     private const string CACHE_KEY = "all-departments";
-    public CreateEmployeeRequestValidator(
+
+    public static async Task<bool> IsValidDepartmentIdAsync(
         ICachingService cache,
-        IDepartmentsService deptService)
+        IDepartmentsService deptService,
+        int departmentId)
     {
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(100).WithMessage("Name must be at most 100 characters long.");
+        var cachedDepartments = await cache.GetAsync<List<TblDepartments>>(CACHE_KEY);
+        if (cachedDepartments.Count > 0)
+        {
+            return cachedDepartments.Any(d => d.Id == departmentId);
+        }
+        
+        var departments = await deptService.GetAllDepartments();
+        
+        if (departments.Count > 0)
+        {
+            await cache.SetAsync(CACHE_KEY, departments);
+        }
+        
+        return departments?.Any(d => d.Id == departmentId) ?? false;
+    }
 
-        RuleFor(x => x.Cpf)
-            .NotEmpty().WithMessage("CPF is required.")
-            .Matches(@"^\d{11}$").WithMessage("CPF must contain exactly 11 numeric digits.");
-
-        RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Email is required.")
-            .EmailAddress().WithMessage("Invalid email format.");
-
-        RuleFor(x => x.Telephone)
-            .MaximumLength(20).WithMessage("Phone number must be at most 20 characters long.");
-
-        RuleFor(x => x.DepartmentId)
-            .CustomAsync(async (deptId, context, ct) =>
-            {
-                if (deptId == 0) return;
-                
-                var list = await cache.GetAsync<List<TblDepartments>>(CACHE_KEY);
-                if (!(list.Count > 0))
-                {
-                    list = await deptService.GetAllDepartments();
-                    await cache.SetAsync(CACHE_KEY, list);
-                }
-                
-                if (list.All(d => d.Id != deptId))
-                {
-                    var allowed = string.Join(", ", list.Select(d => d.Id));
-                    context.AddFailure(
-                        $"Invalid department id. Allowed values: {allowed}."
-                    );
-                }
-            });
-
-        RuleFor(x => x.Gender)
-            .Must(gender => new[] { "F", "M", "O", "N" }.Contains(gender))
-            .When(x => !string.IsNullOrWhiteSpace(x.Gender))
-            .WithMessage("Invalid gender. Allowed values: F, M, O, N.");
-
-        RuleFor(x => x.Wage)
-            .GreaterThan(0)
-            .WithMessage("Invalid salary. Valid format example: 5575.17.")
-            .When(x => x.Wage > 0);
+    public static bool IsValidGender(string? gender)
+    {
+        if (string.IsNullOrWhiteSpace(gender))
+        {
+            return true;
+        }
+        var validGenders = new[] { "F", "M", "O", "N" };
+        return validGenders.Contains(gender, StringComparer.OrdinalIgnoreCase);
     }
 }
 
 public class UpdateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.UpdateEmployeeRequest>
 {
-    private const string CACHE_KEY = "all-departments";
-    
+    private readonly ICachingService _cache;
+    private readonly IDepartmentsService _deptService;
+
     public UpdateEmployeeRequestValidator(
         ICachingService cache,
         IDepartmentsService deptService)
     {
+        _cache = cache;
+        _deptService = deptService;
+        
         RuleFor(x => x.Name)
             .MaximumLength(100).WithMessage("Name must be at most 100 characters long.")
             .When(x => !string.IsNullOrWhiteSpace(x.Name));
@@ -122,25 +107,18 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
             .When(x => !string.IsNullOrWhiteSpace(x.Telephone));
 
         RuleFor(x => x.DepartmentId)
-            .CustomAsync(async (deptId, context, ct) =>
-            {
-                if (deptId == 0) return;
-                
-                var list = await cache.GetAsync<List<TblDepartments>>(CACHE_KEY);
-                if (!(list.Count > 0))
-                {
-                    list = await deptService.GetAllDepartments();
-                    await cache.SetAsync(CACHE_KEY, list);
-                }
-                
-                if (list.All(d => d.Id != deptId))
-                {
-                    var allowed = string.Join(", ", list.Select(d => d.Id));
-                    context.AddFailure(
-                        $"Invalid department id. Allowed values: {allowed}."
-                    );
-                }
-            });
+           .MustAsync(async (departmentId, ct) =>
+           {
+               if (!departmentId.HasValue) return true;
+               return await DepartmentValidationHelper.IsValidDepartmentIdAsync(_cache, _deptService, departmentId.Value);
+           })
+           .When(x => x.DepartmentId.HasValue)
+           .WithMessage("Invalid department id. Please provide a valid DepartmentId.");
+        
+        RuleFor(x => x.Gender)
+            .Must(DepartmentValidationHelper.IsValidGender) // Reutiliza o método de gênero
+            .When(x => !string.IsNullOrWhiteSpace(x.Gender))
+            .WithMessage("Invalid gender. Allowed values: F, M, O, N.");
 
         RuleFor(x => x.Wage)
             .GreaterThan(0)
@@ -167,3 +145,47 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
     }
 }
 
+public class CreateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.CreateEmployeeRequest>
+{
+    private readonly ICachingService _cache;
+    private readonly IDepartmentsService _deptService; 
+
+    public CreateEmployeeRequestValidator(
+        ICachingService cache,
+        IDepartmentsService deptService)
+    {
+        _cache = cache;
+        _deptService = deptService;
+
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .MaximumLength(100).WithMessage("Name must be at most 100 characters long.");
+
+        RuleFor(x => x.Cpf)
+            .NotEmpty().WithMessage("CPF is required.")
+            .Matches(@"^\d{11}$").WithMessage("CPF must contain exactly 11 numeric digits.");
+
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email is required.")
+            .EmailAddress().WithMessage("Invalid email format.");
+
+        RuleFor(x => x.Telephone)
+            .MaximumLength(20).WithMessage("Phone number must be at most 20 characters long.");
+
+        RuleFor(x => x.DepartmentId)
+            .MustAsync(async (departmentId, ct) =>
+            {
+                return await DepartmentValidationHelper.IsValidDepartmentIdAsync(_cache, _deptService, departmentId);
+            })
+            .WithMessage("Invalid department id. Please provide a valid DepartmentId.");
+
+        RuleFor(x => x.Gender)
+            .Must(DepartmentValidationHelper.IsValidGender)
+            .When(x => !string.IsNullOrWhiteSpace(x.Gender))
+            .WithMessage("Invalid gender. Allowed values: F, M, O, N.");
+
+        RuleFor(x => x.Wage)
+            .GreaterThan(0)
+            .WithMessage("Invalid salary. Valid format example: 5575.17.");
+    }
+}

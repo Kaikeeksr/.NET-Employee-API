@@ -31,4 +31,10 @@ public class CachingService : ICachingService
         var json = JsonSerializer.Serialize(value);
         await _cache.SetStringAsync(key, json, _options);
     }
+
+    public Task RemoveAsync(string key)
+    {
+        _cache.Remove(key);
+        return Task.CompletedTask;
+    }
 }

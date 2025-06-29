@@ -6,6 +6,6 @@ namespace Employee.Domain.Interfaces.Services
 {
     public interface IAdminService
     {
-        Task<AdminResponse.CreateAdminResponse> CreateAdminAsync(AdminRequest.CreateAdminRequest request);
+        Task<AdminResponse.CreateAdminResponse?> CreateAdminAsync(AdminRequest.CreateAdminRequest request);
     }
 }

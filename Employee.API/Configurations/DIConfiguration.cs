@@ -5,6 +5,7 @@ using Employee.Domain.Models.Requests;
 using Employee.Domain.Services;
 using Employee.Domain.Utils;
 using Employee.Infrastructure.EF.Repositories;
+using FluentValidation;
 
 namespace Employee.API.Configurations;
 
@@ -30,9 +31,10 @@ public static class DIConfiguration
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
         services.AddScoped<IReportsRepository, ReportsRepository>();
         
-        // Validations
-        services.AddScoped<CreateEmployeeRequestValidator>();
-        services.AddScoped<UpdateEmployeeRequestValidator>();
+        // Validators
+        services.AddScoped<IValidator<EmployeeRequest.CreateEmployeeRequest>, CreateEmployeeRequestValidator>();
+        services.AddScoped<IValidator<EmployeeRequest.UpdateEmployeeRequest>, UpdateEmployeeRequestValidator>();
+        services.AddScoped<IValidator<AdminRequest.CreateAdminRequest>, CreateAdminRequestValidator>();
         
         return services;
     }

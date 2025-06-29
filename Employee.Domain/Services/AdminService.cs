@@ -1,10 +1,10 @@
 ﻿using Employee.Domain.Interfaces;
-using Employee.Domain.Interfaces.Repositories;
 using Employee.Domain.Interfaces.Services;
 using Employee.Domain.Models.Requests;
 using Employee.Domain.Models.Responses;
-using Microsoft.AspNetCore.Identity;
 using Employee.Domain.Utils;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 
 namespace Employee.Domain.Services;
 
@@ -12,22 +12,22 @@ public class AdminService : ValidationService, IAdminService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly CreateAdminRequestValidator _validator;
+    private readonly IValidator<AdminRequest.CreateAdminRequest> _createAdminRequestValidator; 
 
     public AdminService(
         UserManager<IdentityUser> userManager,
         RoleManager<IdentityRole> roleManager,
-        CreateAdminRequestValidator validator,
+        IValidator<AdminRequest.CreateAdminRequest> createAdminRequestValidator, 
         INotificationService notificationService) : base(notificationService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _validator = validator;
+        _createAdminRequestValidator = createAdminRequestValidator;
     }
 
-    public async Task<AdminResponse.CreateAdminResponse> CreateAdminAsync(AdminRequest.CreateAdminRequest request)
+    public async Task<AdminResponse.CreateAdminResponse?> CreateAdminAsync(AdminRequest.CreateAdminRequest request)
     {
-        if (!await ExecuteValidations(_validator, request)) return null;
+        if (!await ExecuteValidationsAsync(_createAdminRequestValidator, request)) return null;
             
         var existingUser = await _userManager.FindByNameAsync(request.Username);
         if (existingUser != null)

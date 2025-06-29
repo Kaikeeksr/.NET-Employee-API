@@ -1,6 +1,7 @@
 ﻿using Employee.Domain.Interfaces;
 using Employee.Domain.Interfaces.Repositories;
 using Employee.Domain.Interfaces.Services;
+using Employee.Domain.Models.Responses;
 using Employee.Domain.Utils;
 
 namespace Employee.Domain.Services;
@@ -28,5 +29,45 @@ public class DepartmentsService : ValidationService, IDepartmentsService
         var departments = await _repository.GetAllDepartmentsAsync();
         await _cache.SetAsync(CACHE_KEY, departments);
         return departments;
+    }
+
+    public async Task<DepartmentResponse.ActivateDepartment?> SetDepartmentActive(int departmentId)
+    {
+        var res = await _repository.SetDepartmentActiveAsync(departmentId);
+
+        if (res == null)
+        {
+            AddMessage($"No department found with id {departmentId}");
+            return null;
+        }
+
+        if (res.AlreadyActive)
+        {
+            AddMessage($"Department with id {departmentId} is already active");
+            return null;
+        }
+        
+        await _cache.RemoveAsync(CACHE_KEY); 
+        return res;
+    }
+
+    public async Task<DepartmentResponse.DeactivateDepartment?> SetDepartmentInactive(int departmentId)
+    {
+        var res = await _repository.SetDepartmentInactiveAsync(departmentId); 
+
+        if (res == null)
+        {
+            AddMessage($"No department found with id {departmentId}");
+            return null;
+        }
+        
+        if (res.AlreadyInactive) 
+        {
+            AddMessage($"Department with id {departmentId} is already inactive");
+            return null;
+        }
+    
+        await _cache.RemoveAsync(CACHE_KEY);
+        return res;
     }
 }
