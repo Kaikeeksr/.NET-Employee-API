@@ -23,12 +23,14 @@ public static class DIConfiguration
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IDepartmentsService, DepartmentsService>();
+        services.AddScoped<IGendersService, GendersService>();
         services.AddScoped<IReportsService, ReportsService>();
         services.AddScoped<ICachingService, CachingService>();
         
         //Repositories
         services.AddScoped<IEmployeesRepository, EmployeesRepository>();
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
+        services.AddScoped<IGendersRepository, GendersRepository>();
         services.AddScoped<IReportsRepository, ReportsRepository>();
         
         // Validators

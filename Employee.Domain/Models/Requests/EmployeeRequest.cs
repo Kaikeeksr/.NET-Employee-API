@@ -12,7 +12,7 @@ public class EmployeeRequest
         public string Cpf { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string? Telephone { get; set; }
-        public string? Gender { get; set; }
+        public int? GenderId { get; set; }
         public decimal Wage { get; set; }
         
         public int DepartmentId { get; set; }
@@ -34,7 +34,7 @@ public class EmployeeRequest
         public string? Email { get; set; } = null!;
         public string? Telephone { get; set; }
         public int? DepartmentId { get; set; }
-        public string? Gender { get; set; }
+        public int? GenderId { get; set; }
         public decimal? Wage { get; set; }
         
         [JsonIgnore] 
@@ -42,16 +42,17 @@ public class EmployeeRequest
     }
 }
 
-public static class DepartmentValidationHelper
+public static class ValidationHelper
 {
-    private const string CACHE_KEY = "all-departments";
+    private const string CACHE_KEY_DEPARTMENTS = "all-departments";
+    private const string CACHE_KEY_GENDERS = "all-genders";
 
     public static async Task<bool> IsValidDepartmentIdAsync(
         ICachingService cache,
         IDepartmentsService deptService,
         int departmentId)
     {
-        var cachedDepartments = await cache.GetAsync<List<TblDepartments>>(CACHE_KEY);
+        var cachedDepartments = await cache.GetAsync<List<TblDepartments>>(CACHE_KEY_DEPARTMENTS);
         if (cachedDepartments.Count > 0)
         {
             return cachedDepartments.Any(d => d.Id == departmentId);
@@ -61,20 +62,33 @@ public static class DepartmentValidationHelper
         
         if (departments.Count > 0)
         {
-            await cache.SetAsync(CACHE_KEY, departments);
+            await cache.SetAsync(CACHE_KEY_DEPARTMENTS, departments);
         }
         
         return departments?.Any(d => d.Id == departmentId) ?? false;
     }
 
-    public static bool IsValidGender(string? gender)
+    public static async Task<bool> IsValidGender(
+        ICachingService cache,
+        IGendersService genderService,
+        int genderId)
     {
-        if (string.IsNullOrWhiteSpace(gender))
+        if (genderId == 0) return true;
+
+        var cachedGenders = await cache.GetAsync<List<TblGenders>>(CACHE_KEY_GENDERS);
+        if (cachedGenders.Count > 0)
         {
-            return true;
+            return cachedGenders.Any(g => g.Id == genderId);
         }
-        var validGenders = new[] { "F", "M", "O", "N" };
-        return validGenders.Contains(gender, StringComparer.OrdinalIgnoreCase);
+        
+        var genders = await genderService.GetAllGenders();
+
+        if (genders.Count > 0)
+        {
+            await cache.SetAsync(CACHE_KEY_GENDERS, genders);
+        }
+        
+        return genders?.Any(g => g.Id == genderId) ?? false;
     }
 }
 
@@ -82,13 +96,16 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
 {
     private readonly ICachingService _cache;
     private readonly IDepartmentsService _deptService;
+    private readonly IGendersService _genderService;
 
     public UpdateEmployeeRequestValidator(
         ICachingService cache,
-        IDepartmentsService deptService)
+        IDepartmentsService deptService,
+        IGendersService gendersService)
     {
         _cache = cache;
         _deptService = deptService;
+        _genderService = gendersService;
         
         RuleFor(x => x.Name)
             .MaximumLength(100).WithMessage("Name must be at most 100 characters long.")
@@ -110,15 +127,19 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
            .MustAsync(async (departmentId, ct) =>
            {
                if (!departmentId.HasValue) return true;
-               return await DepartmentValidationHelper.IsValidDepartmentIdAsync(_cache, _deptService, departmentId.Value);
+               return await ValidationHelper.IsValidDepartmentIdAsync(_cache, _deptService, departmentId.Value);
            })
            .When(x => x.DepartmentId.HasValue)
-           .WithMessage("Invalid department id. Please provide a valid DepartmentId.");
+           .WithMessage("Invalid department id. Please provide a valid department id.");
         
-        RuleFor(x => x.Gender)
-            .Must(DepartmentValidationHelper.IsValidGender) // Reutiliza o método de gênero
-            .When(x => !string.IsNullOrWhiteSpace(x.Gender))
-            .WithMessage("Invalid gender. Allowed values: F, M, O, N.");
+        RuleFor(x => x.GenderId)
+            .MustAsync(async (genderId, ct) =>
+            {
+                if(!genderId.HasValue) return true;
+                return await ValidationHelper.IsValidGender(_cache, _genderService,genderId.Value);
+            }) 
+            .When(x => x.GenderId.HasValue)
+            .WithMessage("Invalid option. Please provide a valid gender.");
 
         RuleFor(x => x.Wage)
             .GreaterThan(0)
@@ -133,7 +154,7 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
                     !string.IsNullOrWhiteSpace(request.Cpf) ||
                     !string.IsNullOrWhiteSpace(request.Email) ||
                     !string.IsNullOrWhiteSpace(request.Telephone) ||
-                    !string.IsNullOrWhiteSpace(request.Gender) ||
+                    request.GenderId.HasValue ||
                     request.DepartmentId.HasValue ||
                     request.Wage.HasValue;
 
@@ -149,6 +170,7 @@ public class CreateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
 {
     private readonly ICachingService _cache;
     private readonly IDepartmentsService _deptService; 
+    private readonly IGendersService _genderService;
 
     public CreateEmployeeRequestValidator(
         ICachingService cache,
@@ -175,14 +197,18 @@ public class CreateEmployeeRequestValidator : AbstractValidator<EmployeeRequest.
         RuleFor(x => x.DepartmentId)
             .MustAsync(async (departmentId, ct) =>
             {
-                return await DepartmentValidationHelper.IsValidDepartmentIdAsync(_cache, _deptService, departmentId);
+                return await ValidationHelper.IsValidDepartmentIdAsync(_cache, _deptService, departmentId);
             })
             .WithMessage("Invalid department id. Please provide a valid DepartmentId.");
 
-        RuleFor(x => x.Gender)
-            .Must(DepartmentValidationHelper.IsValidGender)
-            .When(x => !string.IsNullOrWhiteSpace(x.Gender))
-            .WithMessage("Invalid gender. Allowed values: F, M, O, N.");
+        RuleFor(x => x.GenderId)
+            .MustAsync(async (genderId, ct) =>
+            {
+                if(!genderId.HasValue) return true;
+                return await ValidationHelper.IsValidGender(_cache, _genderService,genderId.Value);
+            }) 
+            .When(x => x.GenderId.HasValue)
+            .WithMessage("Invalid option. Please provide a valid gender.");
 
         RuleFor(x => x.Wage)
             .GreaterThan(0)
